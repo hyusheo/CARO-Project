@@ -40,7 +40,7 @@ int main()
     int   gameStatus = 0;
 
     bool  ruleBlock2 = true;
-    int   aiLevel = 3;
+    int   aiLevel = 2;
     float sfxVolume = 100.f;
     bool  bgmEnabled = true;
 
@@ -92,7 +92,8 @@ int main()
                         mx, my, currentState,
                         boardSize, gameMode,
                         isPlayerTurn, gameStatus, timeRemaining,
-                        undoLeft, lastUndoPlayer,   // <-- truyền undo state
+                        undoLeft, lastUndoPlayer,   
+                        aiLevel,
                         errSound
                     );
                 }

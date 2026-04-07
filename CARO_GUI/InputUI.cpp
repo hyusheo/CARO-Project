@@ -1,4 +1,4 @@
-#include "InputUI.h"
+Ôªø#include "InputUI.h"
 #include "CaroAPI.h"
 #include <algorithm>
 
@@ -64,15 +64,15 @@ void HandleMenuInput(
 //  HandleInGameInput
 //
 //  Undo PVP:
-//    - M?i ng??i cÛ Config::UNDO_MAX l??t (m?c ??nh 3)
-//    - KhÙng ???c d˘ng liÍn ti?p: sau khi d˘ng undo ph?i ?i 1 n??c
+//    - M?i ng??i c√≥ Config::UNDO_MAX l??t (m?c ??nh 3)
+//    - Kh√¥ng ???c d√πng li√™n ti?p: sau khi d√πng undo ph?i ?i 1 n??c
 //      th?c s? tr??c khi ???c undo ti?p
-//    - Undo ch? l˘i 1 n??c c?a chÌnh mÏnh (UndoOneMove)
-//    - Sau undo v?n l‡ l??t c?a ng??i ?Û (???c ?i l?i)
+//    - Undo ch? l√πi 1 n??c c?a ch√≠nh m√¨nh (UndoOneMove)
+//    - Sau undo v?n l√† l??t c?a ng??i ?√≥ (???c ?i l?i)
 //
 //  Undo PVE:
-//    - Gi? nguyÍn h‡nh vi c?: undo theo c?p (AI + ng??i)
-//    - KhÙng gi?i h?n l??t (undoLeft khÙng ·p d?ng)
+//    - Gi? nguy√™n h√†nh vi c?: undo theo c?p (AI + ng??i)
+//    - Kh√¥ng gi?i h?n l??t (undoLeft kh√¥ng √°p d?ng)
 // ============================================================
 void HandleInGameInput(
     int mouseX, int mouseY,
@@ -80,10 +80,13 @@ void HandleInGameInput(
     int boardSize,
     GameMode gameMode,
     bool& isPlayerTurn, int& gameStatus, float& timeRemaining,
-    int undoLeft[2], int& lastUndoPlayer,
+    int undoLeft[2],
+    
+    int& lastUndoPlayer,
+    int aiLevel,
     sf::Sound& errSound)
 {
-    // --- A. Khu v?c b‡n c? ---
+    // --- A. Khu v?c b√†n c? ---
     int cellSz = GetDynCellSize(boardSize);
     const int BLEFT = Config::OFFSET_X;
     const int BTOP = Config::OFFSET_Y;
@@ -103,6 +106,7 @@ void HandleInGameInput(
             int currentPlayer = (gameMode == PVP && !isPlayerTurn) ? 2 : 1;
             int res = ProcessMove(gX, gY, currentPlayer);
 
+            // Khu v·ª±c x·ª≠ l√Ω khi ƒë√°nh c·ªù th√†nh c√¥ng:
             if (res == -1)
             {
                 errSound.play();
@@ -112,15 +116,14 @@ void HandleInGameInput(
                 gameStatus = res;
                 timeRemaining = 60.f;
 
-                // Ng??i v?a ?i n??c th?c ? reset quy?n undo c?a h?
-                // (???c phÈp undo l?i ? l??t sau n?u cÚn l??t)
                 int playerIdx = (currentPlayer == 1) ? 0 : 1;
-                lastUndoPlayer = -1; // ai c?ng cÛ th? undo, khÙng b? ch?n liÍn ti?p
+                lastUndoPlayer = -1;
 
                 if (gameMode == PVP)
                     isPlayerTurn = !isPlayerTurn;
                 else {
                     isPlayerTurn = false;
+                    // TRUY·ªÄN aiLevel V√ÄO H√ÄM AI THINKING
                     if (gameStatus == 0) StartAIThinking();
                 }
             }
@@ -128,7 +131,7 @@ void HandleInGameInput(
         return;
     }
 
-    // --- B. N˙t Undo / Save / Main Menu ---
+    // --- B. N√∫t Undo / Save / Main Menu ---
     const float pX = PanelX(boardSize);
     const float BTN_W = static_cast<float>(Config::PANEL_W);
     const float BTN_H = 52.f;
@@ -149,7 +152,7 @@ void HandleInGameInput(
                 // isPlayerTurn false = l??t O (P2, idx 1)
                 int playerIdx = isPlayerTurn ? 0 : 1;
 
-                // Ch?n undo liÍn ti?p: ph?i ?i 1 n??c th?c tr??c
+                // Ch?n undo li√™n ti?p: ph?i ?i 1 n??c th?c tr??c
                 if (lastUndoPlayer == playerIdx) {
                     errSound.play();
                     return;
@@ -160,32 +163,32 @@ void HandleInGameInput(
                     return;
                 }
 
-                // ?? FIX BUG 1 & 2: d˘ng UndoMove() pop C?P 2 n??c ??
-                // L˝ do:
-                //   Khi ??n l??t P1, stack top l‡ n??c c?a P2 (v?a ?·nh).
-                //   UndoOneMove() ch? xÛa n??c P2 ? P1 khÙng l?y l?i
-                //   ???c n??c c?a mÏnh, v‡ l??t b? l?ch.
-                //   UndoMove() xÛa c? 2 (P2 + P1) ? P1 v? ?˙ng tr?ng
-                //   th·i tr??c khi P1 b?m n??c ?Û, isPlayerTurn khÙng
-                //   ??i ? P1 ???c ?i l?i ?˙ng.
+                // ?? FIX BUG 1 & 2: d√πng UndoMove() pop C?P 2 n??c ??
+                // L√Ω do:
+                //   Khi ??n l??t P1, stack top l√† n??c c?a P2 (v?a ?√°nh).
+                //   UndoOneMove() ch? x√≥a n??c P2 ? P1 kh√¥ng l?y l?i
+                //   ???c n??c c?a m√¨nh, v√† l??t b? l?ch.
+                //   UndoMove() x√≥a c? 2 (P2 + P1) ? P1 v? ?√∫ng tr?ng
+                //   th√°i tr??c khi P1 b?m n??c ?√≥, isPlayerTurn kh√¥ng
+                //   ??i ? P1 ???c ?i l?i ?√∫ng.
                 int undone = UndoMove();
                 if (undone == 0) {
                     errSound.play(); // stack r?ng
                     return;
                 }
 
-                // Undo th‡nh cÙng
+                // Undo th√†nh c√¥ng
                 undoLeft[playerIdx]--;
-                lastUndoPlayer = playerIdx; // ?·nh d?u ng??i n‡y v?a undo
+                lastUndoPlayer = playerIdx; // ?√°nh d?u ng??i n√†y v?a undo
 
                 gameStatus = 0;
                 timeRemaining = 60.f;
 
-                // isPlayerTurn KH‘NG ??i ? ?˙ng ng??i v?a undo
-                // ???c ?i l?i n??c c?a mÏnh.
+                // isPlayerTurn KH√îNG ??i ? ?√∫ng ng??i v?a undo
+                // ???c ?i l?i n??c c?a m√¨nh.
                 //
-                // Tr??ng h?p ??c bi?t: n?u stack ch? cÛ 1 n??c
-                // (P1 m?i ?·nh 1 n??c, ch?a ai ?·nh thÍm) v‡ P1 undo
+                // Tr??ng h?p ??c bi?t: n?u stack ch? c√≥ 1 n??c
+                // (P1 m?i ?√°nh 1 n??c, ch?a ai ?√°nh th√™m) v√† P1 undo
                 // ? undone == 1, board s?ch, tr? l??t v? P1 (isPlayerTurn = true)
                 if (undone == 1) isPlayerTurn = true;
             }
@@ -211,7 +214,7 @@ void HandleInGameInput(
 }
 
 // ============================================================
-//  HandleSettingsInput (khÙng ??i)
+//  HandleSettingsInput (kh√¥ng ??i)
 // ============================================================
 void HandleSettingsInput(
     int mouseX, int mouseY,
@@ -233,8 +236,8 @@ void HandleSettingsInput(
     if (hToggle(SY + RG)) { ruleBlock2 = !ruleBlock2; errSound.play(); }
 
     float r2 = SY + RG * 2;
-    if (hMinus(r2)) { aiLevel = std::max(1, aiLevel - 1); errSound.play(); }
-    else if (hPlus(r2)) { aiLevel = std::min(6, aiLevel + 1); errSound.play(); }
+    if (hMinus(r2)) { aiLevel = std::max(0, aiLevel - 1); errSound.play(); }
+    else if (hPlus(r2)) { aiLevel = std::min(2, aiLevel + 1); errSound.play(); }
 
     float r3 = SY + RG * 3;
     if (hMinus(r3)) {
@@ -252,4 +255,6 @@ void HandleSettingsInput(
     const float BX = Config::WIN_WIDTH / 2.f - BW / 2.f, BY = 650.f;
     if (mouseX >= BX && mouseX <= BX + BW && mouseY >= BY && mouseY <= BY + BH)
         currentState = MENU_SCREEN;
+
+
 }

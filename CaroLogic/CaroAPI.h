@@ -27,7 +27,7 @@ extern "C" {
     CARO_API int  UndoOneMove();
 
     // 4. Xử lý AI Đa luồng
-    CARO_API void StartAIThinking();
+    CARO_API void StartAIThinking(int aiLevel);
     CARO_API bool IsAIThinking();
     CARO_API int  GetAIResult(int* outX, int* outY);
 

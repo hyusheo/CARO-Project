@@ -425,4 +425,41 @@ void DrawSettings(sf::RenderWindow& window, const sf::Font& font,
     sf::FloatRect br = bt.getLocalBounds();
     bt.setOrigin(br.left + br.width / 2.f, br.top + br.height / 2.f);
     bt.setPosition(BX + BW / 2.f, BY + BH / 2.f); window.draw(bt);
+
+    sf::Text titleAi("DO KHO AI:", font, 24);
+    titleAi.setPosition(200.f, 300.f); // Thay đổi tọa độ cho phù hợp với UI của bạn
+    titleAi.setFillColor(sf::Color::White);
+    window.draw(titleAi);
+
+    // Thông số 3 nút (Dễ - Trung bình - Khó)
+    std::string levelNames[3] = { "De", "Trung Binh", "Kho" };
+    int btnWidth = 150;
+    int btnHeight = 40;
+    int startX = 400; // Tọa độ X bắt đầu vẽ nút
+    int startY = 295; // Tọa độ Y
+
+    for (int i = 0; i < 3; i++) {
+        // Vẽ khung nút
+        sf::RectangleShape btn(sf::Vector2f(btnWidth, btnHeight));
+        btn.setPosition(startX + (btnWidth + 20) * i, startY);
+
+        // Nút nào đang được chọn thì tô màu xanh, chưa chọn tô màu xám
+        if (aiLevel == i) {
+            btn.setFillColor(sf::Color(50, 200, 50)); // Xanh lá
+        }
+        else {
+            btn.setFillColor(sf::Color(150, 150, 150)); // Xám
+        }
+        window.draw(btn);
+
+        // Vẽ chữ lên nút
+        sf::Text text(levelNames[i], font, 20);
+        text.setFillColor(sf::Color::White);
+        // Căn giữa chữ vào nút
+        text.setPosition(
+            btn.getPosition().x + (btnWidth - text.getGlobalBounds().width) / 2.f,
+            btn.getPosition().y + (btnHeight - text.getGlobalBounds().height) / 2.f - 5.f
+        );
+        window.draw(text);
+    }
 }

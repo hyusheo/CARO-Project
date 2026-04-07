@@ -174,7 +174,7 @@ extern "C" CARO_API int UndoOneMove()
 
     return 1;
 }
-extern "C" CARO_API void StartAIThinking()
+extern "C" CARO_API void StartAIThinking(int aiLevel)
 {
     g_isAiThinking = true;
 
@@ -184,9 +184,9 @@ extern "C" CARO_API void StartAIThinking()
         for (int j = 0; j < g_boardSize; ++j)
             boardCopy[i][j] = g_board[i][j];
 
-    g_aiTask = std::async(std::launch::async, []()
+    g_aiTask = std::async(std::launch::async, [aiLevel]()
         {
-            CalculateBestMove(boardCopy, g_boardSize, g_aiLevel,
+            CalculateBestMove(boardCopy, g_boardSize, aiLevel,
                 &g_aiMoveX, &g_aiMoveY);
 
             // Đặt quân AI lên bàn cờ thật và ghi vào lịch sử

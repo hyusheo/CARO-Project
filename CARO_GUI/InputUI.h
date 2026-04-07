@@ -32,6 +32,7 @@ void HandleInGameInput(
     GameMode gameMode,
     bool& isPlayerTurn, int& gameStatus, float& timeRemaining,
     int undoLeft[2], int& lastUndoPlayer,
+    int aiLevel,
     sf::Sound& errSound
 );
 
