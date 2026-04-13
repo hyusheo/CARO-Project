@@ -1,4 +1,4 @@
-#include "InputUI.h"
+ï»¿#include "InputUI.h"
 #include "CaroAPI.h"
 #include <algorithm>
 
@@ -64,15 +64,15 @@ void HandleMenuInput(
 //  HandleInGameInput
 //
 //  Undo PVP:
-//    - M?i ng??i có Config::UNDO_MAX l??t (m?c ??nh 3)
-//    - Không ???c dùng liên ti?p: sau khi dùng undo ph?i ?i 1 n??c
+//    - M?i ng??i cÃ³ Config::UNDO_MAX l??t (m?c ??nh 3)
+//    - KhÃ´ng ???c dÃ¹ng liÃªn ti?p: sau khi dÃ¹ng undo ph?i ?i 1 n??c
 //      th?c s? tr??c khi ???c undo ti?p
-//    - Undo ch? lùi 1 n??c c?a chính mình (UndoOneMove)
-//    - Sau undo v?n là l??t c?a ng??i ?ó (???c ?i l?i)
+//    - Undo ch? lÃ¹i 1 n??c c?a chÃ­nh mÃ¬nh (UndoOneMove)
+//    - Sau undo v?n lÃ  l??t c?a ng??i ?Ã³ (???c ?i l?i)
 //
 //  Undo PVE:
-//    - Gi? nguyên hành vi c?: undo theo c?p (AI + ng??i)
-//    - Không gi?i h?n l??t (undoLeft không áp d?ng)
+//    - Gi? nguyÃªn hÃ nh vi c?: undo theo c?p (AI + ng??i)
+//    - KhÃ´ng gi?i h?n l??t (undoLeft khÃ´ng Ã¡p d?ng)
 // ============================================================
 void HandleInGameInput(
     int mouseX, int mouseY,
@@ -83,7 +83,7 @@ void HandleInGameInput(
     int undoLeft[2], int& lastUndoPlayer,
     sf::Sound& errSound)
 {
-    // --- A. Khu v?c bàn c? ---
+    // --- A. Khu v?c bÃ n c? ---
     int cellSz = GetDynCellSize(boardSize);
     const int BLEFT = Config::OFFSET_X;
     const int BTOP = Config::OFFSET_Y;
@@ -113,9 +113,9 @@ void HandleInGameInput(
                 timeRemaining = 60.f;
 
                 // Ng??i v?a ?i n??c th?c ? reset quy?n undo c?a h?
-                // (???c phép undo l?i ? l??t sau n?u còn l??t)
+                // (???c phÃ©p undo l?i ? l??t sau n?u cÃ²n l??t)
                 int playerIdx = (currentPlayer == 1) ? 0 : 1;
-                lastUndoPlayer = -1; // ai c?ng có th? undo, không b? ch?n liên ti?p
+                lastUndoPlayer = -1; // ai c?ng cÃ³ th? undo, khÃ´ng b? ch?n liÃªn ti?p
 
                 if (gameMode == PVP)
                     isPlayerTurn = !isPlayerTurn;
@@ -128,7 +128,7 @@ void HandleInGameInput(
         return;
     }
 
-    // --- B. Nút Undo / Save / Main Menu ---
+    // --- B. NÃºt Undo / Save / Main Menu ---
     const float pX = PanelX(boardSize);
     const float BTN_W = static_cast<float>(Config::PANEL_W);
     const float BTN_H = 52.f;
@@ -142,6 +142,11 @@ void HandleInGameInput(
 
         if (i == 0) // ?? UNDO ??????????????????????????????
         {
+            //Náº¿u tháº¯ng, hÃ²a, thua thÃ¬ sáº½ khÃ´ng undo Ä‘Æ°á»£c ná»¯a
+            if (gameStatus != 0) {
+                errSound.play();
+                return;
+            }
             if (gameMode == PVP)
             {
                 // playerIdx = ng??i ?ang ??n l??t (ng??i b?m Undo)
@@ -149,7 +154,7 @@ void HandleInGameInput(
                 // isPlayerTurn false = l??t O (P2, idx 1)
                 int playerIdx = isPlayerTurn ? 0 : 1;
 
-                // Ch?n undo liên ti?p: ph?i ?i 1 n??c th?c tr??c
+                // Ch?n undo liÃªn ti?p: ph?i ?i 1 n??c th?c tr??c
                 if (lastUndoPlayer == playerIdx) {
                     errSound.play();
                     return;
@@ -160,32 +165,32 @@ void HandleInGameInput(
                     return;
                 }
 
-                // ?? FIX BUG 1 & 2: dùng UndoMove() pop C?P 2 n??c ??
-                // Lý do:
-                //   Khi ??n l??t P1, stack top là n??c c?a P2 (v?a ?ánh).
-                //   UndoOneMove() ch? xóa n??c P2 ? P1 không l?y l?i
-                //   ???c n??c c?a mình, và l??t b? l?ch.
-                //   UndoMove() xóa c? 2 (P2 + P1) ? P1 v? ?úng tr?ng
-                //   thái tr??c khi P1 b?m n??c ?ó, isPlayerTurn không
-                //   ??i ? P1 ???c ?i l?i ?úng.
+                // ?? FIX BUG 1 & 2: dÃ¹ng UndoMove() pop C?P 2 n??c ??
+                // LÃ½ do:
+                //   Khi ??n l??t P1, stack top lÃ  n??c c?a P2 (v?a ?Ã¡nh).
+                //   UndoOneMove() ch? xÃ³a n??c P2 ? P1 khÃ´ng l?y l?i
+                //   ???c n??c c?a mÃ¬nh, vÃ  l??t b? l?ch.
+                //   UndoMove() xÃ³a c? 2 (P2 + P1) ? P1 v? ?Ãºng tr?ng
+                //   thÃ¡i tr??c khi P1 b?m n??c ?Ã³, isPlayerTurn khÃ´ng
+                //   ??i ? P1 ???c ?i l?i ?Ãºng.
                 int undone = UndoMove();
                 if (undone == 0) {
                     errSound.play(); // stack r?ng
                     return;
                 }
 
-                // Undo thành công
+                // Undo thÃ nh cÃ´ng
                 undoLeft[playerIdx]--;
-                lastUndoPlayer = playerIdx; // ?ánh d?u ng??i này v?a undo
+                lastUndoPlayer = playerIdx; // ?Ã¡nh d?u ng??i nÃ y v?a undo
 
                 gameStatus = 0;
                 timeRemaining = 60.f;
 
-                // isPlayerTurn KHÔNG ??i ? ?úng ng??i v?a undo
-                // ???c ?i l?i n??c c?a mình.
+                // isPlayerTurn KHÃ”NG ??i ? ?Ãºng ng??i v?a undo
+                // ???c ?i l?i n??c c?a mÃ¬nh.
                 //
-                // Tr??ng h?p ??c bi?t: n?u stack ch? có 1 n??c
-                // (P1 m?i ?ánh 1 n??c, ch?a ai ?ánh thêm) và P1 undo
+                // Tr??ng h?p ??c bi?t: n?u stack ch? cÃ³ 1 n??c
+                // (P1 m?i ?Ã¡nh 1 n??c, ch?a ai ?Ã¡nh thÃªm) vÃ  P1 undo
                 // ? undone == 1, board s?ch, tr? l??t v? P1 (isPlayerTurn = true)
                 if (undone == 1) isPlayerTurn = true;
             }
@@ -211,7 +216,7 @@ void HandleInGameInput(
 }
 
 // ============================================================
-//  HandleSettingsInput (không ??i)
+//  HandleSettingsInput (khÃ´ng ??i)
 // ============================================================
 void HandleSettingsInput(
     int mouseX, int mouseY,

@@ -2,10 +2,10 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>D:\downloads\CaroGameProject\CaroGameProject\x64\Debug\CaroLogic.dll</FullPath>
+      <FullPath>D:\cslt\CARO-FIXED\CAROGAME\x64\Debug\CaroLogic.dll</FullPath>
     </ProjectOutput>
     <ProjectOutput>
-      <FullPath>D:\downloads\CaroGameProject\CaroGameProject\x64\Debug\CaroGUI.exe</FullPath>
+      <FullPath>D:\cslt\CARO-FIXED\CAROGAME\x64\Debug\CaroGUI.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

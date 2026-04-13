@@ -35,3 +35,4 @@ extern "C" {
     CARO_API bool SaveGameBinary(const char* filepath, float timeLeft, int isPlayerTurn);
     CARO_API bool LoadGameBinary(const char* filepath, float* timeLeft, int* isPlayerTurn);
 }
+
