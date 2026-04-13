@@ -75,14 +75,15 @@ void HandleMenuInput(
                 else 
                 {
                     errSound.play();
-                }
             }
+            else if (i == 4) { window.close(); }
+        }
             // EXIT
             else if (i == 4) 
             { 
                 window.close(); 
-            }
-        }
+    }
+}
     }
 }
 
@@ -141,6 +142,8 @@ void HandleInGameInput(
                 gameStatus = res;
                 timeRemaining = 60.f;
 
+                // Ng??i v?a ?i n??c th?c ? reset quy?n undo c?a h?
+                // (???c ph�p undo l?i ? l??t sau n?u c�n l??t)
                 int playerIdx = (currentPlayer == 1) ? 0 : 1;
                 lastUndoPlayer = -1; // ai cũng có thể undo, không bị chặn liên tiếp
 
@@ -157,7 +160,7 @@ void HandleInGameInput(
         return;
     }
 
-    // --- B. Nút Undo / Save / Main Menu ---
+    // --- B. N�t Undo / Save / Main Menu ---
     const float pX = PanelX(boardSize);
     const float BTN_W = static_cast<float>(Config::PANEL_W);
     const float BTN_H = 52.f;
@@ -194,8 +197,8 @@ void HandleInGameInput(
                     return;
                 }
 
-                // ?? FIX BUG 1 & 2: dùng UndoMove() pop C?P 2 n??c ??
-                // Lý do:
+                // ?? FIX BUG 1 & 2: d�ng UndoMove() pop C?P 2 n??c ??
+                // L� do:
                 //   Khi đến lượt P1, stack top là nước của P2 (vừa đánh).
                 //   UndoOneMove() chỉ xóa nước P2 và P1 không lấy lại được nước của mình, và lượt bị lệch.
                 //   UndoMove() xóa cả 2 (P2 + P1) ? P1 về đúng trạng thái trước khi P1 bấm nước đó, isPlayerTurn không ??i ? P1 được đi lại đúng.
@@ -206,7 +209,7 @@ void HandleInGameInput(
                     return;
                 }
 
-                // Undo thành công
+                // Undo th�nh c�ng
                 undoLeft[playerIdx]--;
                 lastUndoPlayer = playerIdx; // đánh dấu người này vừa undo
 
@@ -257,7 +260,7 @@ void HandleInGameInput(
 }
 
 // ============================================================
-//  HandleSettingsInput (không ??i)
+//  HandleSettingsInput (kh�ng ??i)
 // ============================================================
 void HandleSettingsInput(
     int mouseX, int mouseY,

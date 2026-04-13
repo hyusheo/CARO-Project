@@ -15,14 +15,14 @@ int main()
     window.setFramerateLimit(60);
 
     sf::Font font;
-    if (!font.loadFromFile("arial.ttf")) 
+    if (!font.loadFromFile("arial.ttf"))
     {
         std::cout << "Loi: Khong tim thay arial.ttf" << std::endl;
     }
 
     sf::SoundBuffer errBuffer;
     sf::Sound errSound;
-    if (errBuffer.loadFromFile("error.wav")) 
+    if (errBuffer.loadFromFile("error.wav"))
     {
         errSound.setBuffer(errBuffer);
     }
@@ -136,14 +136,14 @@ int main()
                 int result = GetAIResult(&aiX, &aiY);
 
                 if (aiX != -1)        // Co nuoc di 
-                {
+            {
                     gameStatus = result;
                     if (gameStatus != 0)
                     {
                         GetWinLine(&winX1, &winY1, &winX2, &winY2);
                     }
-                    isPlayerTurn = true;
-                    timeRemaining = 60.f;
+                isPlayerTurn = true;
+                timeRemaining = 60.f;
                 }
             }
         }

@@ -95,7 +95,7 @@ void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
         { 
             turnStr = "NGUOI 1 (X)"; 
             turnColor = COLOR_X; 
-        }
+    }
         else 
         { 
             turnStr = "NGUOI 2 (O)"; 
@@ -107,7 +107,7 @@ void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
         { 
             turnStr = "NGUOI (X)";  
             turnColor = COLOR_X; 
-        }
+    }
         else 
         { 
             turnStr = "MAY (O)";     
@@ -173,7 +173,7 @@ void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
             if (gameStatus == 1) 
             {
                 s = "NGUOI 1 THANG!";
-            }
+        }
             else if (gameStatus == 2) 
             {
                 s = "NGUOI 2 THANG!";
@@ -193,9 +193,9 @@ void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
             {
                 s = "MAY THANG!";
             }
-            else {
+        else {
                 s = "HOA!";
-            }
+        }
         }
         sf::Text st(s, font, 26);
         st.setFillColor(WIN_LINE_COLOR);
@@ -213,7 +213,7 @@ void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
             {
                 hintStr = "Luot Nguoi 1 - bam vao ban co";
             }
-            else
+        else
             {
                 hintStr = "Luot Nguoi 2 - bam vao ban co";
             }

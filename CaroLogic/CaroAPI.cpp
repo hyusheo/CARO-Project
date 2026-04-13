@@ -144,30 +144,30 @@ extern "C" CARO_API int UndoMove()
     if (g_historyCount == 0) return 0; // không có gì để undo
 
     // Xóa đường thắng trước (undo hủy mọi trạng thái kết thúc)
-g_winStartX = g_winStartY = g_winEndX = g_winEndY = -1;
+    g_winStartX = g_winStartY = g_winEndX = g_winEndY = -1;
 
-int undone = 0;
+    int undone = 0;
 
-// Undo nước 1 (nước trên cùng stack — thường là nước AI)
-{
-    --g_historyCount;
-    int x = g_history[g_historyCount].x;
-    int y = g_history[g_historyCount].y;
-    g_board[x][y] = 0;
-    ++undone;
-}
+    // Undo nước 1 (nước trên cùng stack — thường là nước AI)
+    {
+        --g_historyCount;
+        int x = g_history[g_historyCount].x;
+        int y = g_history[g_historyCount].y;
+        g_board[x][y] = 0;
+        ++undone;
+    }
 
-// Undo thêm nước 2 nếu còn (nước người chơi đứng ngay trước AI)
-if (g_historyCount > 0)
-{
-    --g_historyCount;
-    int x = g_history[g_historyCount].x;
-    int y = g_history[g_historyCount].y;
-    g_board[x][y] = 0;
-    ++undone;
-}
+    // Undo thêm nước 2 nếu còn (nước người chơi đứng ngay trước AI)
+    if (g_historyCount > 0)
+    {
+        --g_historyCount;
+        int x = g_history[g_historyCount].x;
+        int y = g_history[g_historyCount].y;
+        g_board[x][y] = 0;
+        ++undone;
+    }
 
-return undone; // 1 hoặc 2
+    return undone; // 1 hoặc 2
 }
 
 // ============================================================

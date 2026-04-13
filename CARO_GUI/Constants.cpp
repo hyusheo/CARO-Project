@@ -36,7 +36,7 @@ int GetDynCellSize(int boardSize)
 const sf::Color BG_COLOR(25, 25, 30);               // Nền tối Dark Mode
 const sf::Color GRID_COLOR(70, 70, 80);             // Lưới xám tro
 const sf::Color COLOR_X(255, 50, 50);               // Đỏ Neon – quân X
-const sf::Color COLOR_O(50, 255, 150);              // Xanh lá Neon – quân O
+const sf::Color COLOR_O(50, 255, 150);              // Xanh l� Neon � qu�n O
 const sf::Color HOVER_COLOR(255, 255, 255, 30);     // Sáng mờ khi hover (alpha = 30)
 const sf::Color WIN_LINE_COLOR(255, 215, 0);        // Vàng n?i b?t – đường thẳng
 const sf::Color BTN_COLOR(40, 40, 50);              // Màu nền nút bấm

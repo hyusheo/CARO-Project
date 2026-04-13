@@ -16,7 +16,7 @@ void DrawWinLine(sf::RenderWindow& window, int sX, int sY, int eX, int eY, int b
 void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
     float timeRemaining, bool isPlayerTurn,
     int gameStatus, int boardSize, GameMode gameMode,
-    int undoLeft[2]);
+    int undoLeft[2]);   // undoLeft[0]=P1, undoLeft[1]=P2
 
 void DrawSettings(sf::RenderWindow& window, const sf::Font& font,
     int boardSize, bool ruleBlock2, int aiLevel,

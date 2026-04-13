@@ -49,6 +49,15 @@ struct Config {
 
 // ============================================================
 //  GetDynCellSize – Tính kích thước ô ĐỘNG theo boardSize
+//
+//  Đảm bảo bàn cờ KHÔNG BAO GIỜ đè lên panel bên phải,
+//  đồng thời không vượt quá chiều cao cửa sổ.
+//
+//  Không gian dành cho bàn cờ:
+//    Ngang: WIN_WIDTH - OFFSET_X - PANEL_W - PANEL_GAP - margin_phải(10)
+//    Dọc  : WIN_HEIGHT - 2 * OFFSET_Y
+//
+//  Ô = min(CELL_SIZE, avail_W / boardSize, avail_H / boardSize)
 // ============================================================
 int GetDynCellSize(int boardSize);
 
