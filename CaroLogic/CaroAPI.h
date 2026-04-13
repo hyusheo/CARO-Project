@@ -6,6 +6,12 @@
 #define CARO_API __declspec(dllimport)
 #endif
 
+struct AIMoveResult {
+    int x;
+    int y;
+    int state;
+};
+
 extern "C" {
     // 1. Quản lý trạng thái
     CARO_API void InitGame(int size, bool ruleBlock2, int level);
@@ -30,6 +36,8 @@ extern "C" {
     CARO_API void StartAIThinking();
     CARO_API bool IsAIThinking();
     CARO_API int  GetAIResult(int* outX, int* outY);
+    CARO_API void UpdateAI(); 
+
 
     // 5. File I/O
     CARO_API bool SaveGameBinary(const char* filepath, float timeLeft, int isPlayerTurn);

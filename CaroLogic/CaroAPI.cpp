@@ -49,11 +49,10 @@ static void PushHistory(int x, int y, int player)
 //  LUỒNG AI
 // ============================================================
 std::atomic<bool> g_isAiThinking = false;
-std::future<void> g_aiTask;
-int g_aiMoveX = -1;
-int g_aiMoveY = -1;
-int g_aiResultState = 0;
+std::future<AIMoveResult> g_aiTask;
 
+static AIMoveResult g_aiResult{ -1, -1, 0 }; 
+static std::atomic<bool> g_hasAIResult = false; 
 // ============================================================
 //  InitGame – Khởi tạo / reset toàn bộ trạng thái
 // ============================================================
@@ -145,30 +144,30 @@ extern "C" CARO_API int UndoMove()
     if (g_historyCount == 0) return 0; // không có gì để undo
 
     // Xóa đường thắng trước (undo hủy mọi trạng thái kết thúc)
-    g_winStartX = g_winStartY = g_winEndX = g_winEndY = -1;
+g_winStartX = g_winStartY = g_winEndX = g_winEndY = -1;
 
-    int undone = 0;
+int undone = 0;
 
-    // Undo nước 1 (nước trên cùng stack — thường là nước AI)
-    {
-        --g_historyCount;
-        int x = g_history[g_historyCount].x;
-        int y = g_history[g_historyCount].y;
-        g_board[x][y] = 0;
-        ++undone;
-    }
+// Undo nước 1 (nước trên cùng stack — thường là nước AI)
+{
+    --g_historyCount;
+    int x = g_history[g_historyCount].x;
+    int y = g_history[g_historyCount].y;
+    g_board[x][y] = 0;
+    ++undone;
+}
 
-    // Undo thêm nước 2 nếu còn (nước người chơi đứng ngay trước AI)
-    if (g_historyCount > 0)
-    {
-        --g_historyCount;
-        int x = g_history[g_historyCount].x;
-        int y = g_history[g_historyCount].y;
-        g_board[x][y] = 0;
-        ++undone;
-    }
+// Undo thêm nước 2 nếu còn (nước người chơi đứng ngay trước AI)
+if (g_historyCount > 0)
+{
+    --g_historyCount;
+    int x = g_history[g_historyCount].x;
+    int y = g_history[g_historyCount].y;
+    g_board[x][y] = 0;
+    ++undone;
+}
 
-    return undone; // 1 hoặc 2
+return undone; // 1 hoặc 2
 }
 
 // ============================================================
@@ -195,7 +194,7 @@ extern "C" CARO_API void StartAIThinking()
     g_isAiThinking = true;
 
     // Snapshot bàn cờ để tránh data race
-    static int boardCopy[30][30];
+    int boardCopy[30][30];
     for (int i = 0; i < g_boardSize; ++i)
     {
         for (int j = 0; j < g_boardSize; ++j)
@@ -204,17 +203,17 @@ extern "C" CARO_API void StartAIThinking()
         }
     }
 
-    g_aiTask = std::async(std::launch::async, []()
+    // Worker Thread 
+    // Doc snapshot
+    // Return result 
+    g_aiTask = std::async(std::launch::async, [boardCopy,
+        size = g_boardSize, level = g_aiLevel]() -> AIMoveResult
         {
-            CalculateBestMove(boardCopy, g_boardSize, g_aiLevel,
-                &g_aiMoveX, &g_aiMoveY);
+            AIMoveResult res;
+            CalculateBestMove(boardCopy, size, level, &res.x, &res.y);
 
-            // Đặt quân AI lên bàn cờ thật và ghi vào lịch sử
-            g_board[g_aiMoveX][g_aiMoveY] = 2;
-            PushHistory(g_aiMoveX, g_aiMoveY, 2); // <-- ghi lịch sử AI
-
-            g_aiResultState = CheckWinCondition(g_aiMoveX, g_aiMoveY, 2);
-            g_isAiThinking = false;
+            //res.state = CheckWinCondition(res.x, res.y, 2);
+            return res;
         });
 }
 
@@ -228,9 +227,49 @@ extern "C" CARO_API bool IsAIThinking()
 
 extern "C" CARO_API int GetAIResult(int* outX, int* outY)
 {
-    *outX = g_aiMoveX;
-    *outY = g_aiMoveY;
-    return g_aiResultState;
+    if (!g_hasAIResult)
+    {
+        return 0; 
+    }
+    *outX = g_aiResult.x;
+    *outY = g_aiResult.y;
+    
+    int result = g_aiResult.state;
+
+    // Reset sau khi lay ket qua
+
+    g_hasAIResult = false; 
+
+    return result; 
+}
+
+extern "C" CARO_API void UpdateAI()
+{
+    // Neu AI khong chay -> khong lam gi
+    if (!g_isAiThinking)
+    {
+        return;
+    }
+
+    // Kiem tra task da hoan thanh chua (KHONG block)
+    if (g_aiTask.valid() &&
+        g_aiTask.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+        {
+            // Lay ket qua tu worker thread
+            auto result = g_aiTask.get(); 
+
+            // Duy nhat tai day moi duoc phep sua state
+            g_board[result.x][result.y] = 2;
+            PushHistory(result.x, result.y, 2); 
+
+            result.state = CheckWinCondition(result.x, result.y, 2);
+
+            g_aiResult = result; 
+            g_hasAIResult = true; 
+
+            // Danh dau AI da xong
+            g_isAiThinking = false; 
+        }
 }
 
 // ============================================================

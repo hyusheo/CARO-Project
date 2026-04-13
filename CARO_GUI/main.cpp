@@ -120,6 +120,7 @@ int main()
         }
 
         // ── Cập nhật logic ───────────────────────────────────
+        UpdateAI();
         if (currentState == AppState::IN_GAME_SCREEN && gameStatus == 0)
         {
             timeRemaining -= dt;
@@ -130,13 +131,19 @@ int main()
 
             if (gameMode == GameMode::PVE && !isPlayerTurn && !IsAIThinking())
             {
-                int aiX, aiY;
-                gameStatus = GetAIResult(&aiX, &aiY);
-                isPlayerTurn = true;
-                timeRemaining = 60.f;
-                if (gameStatus != 0)
+                int aiX = -1;
+                int aiY = -1;
+                int result = GetAIResult(&aiX, &aiY);
+
+                if (aiX != -1)        // Co nuoc di 
                 {
-                    GetWinLine(&winX1, &winY1, &winX2, &winY2);
+                    gameStatus = result;
+                    if (gameStatus != 0)
+                    {
+                        GetWinLine(&winX1, &winY1, &winX2, &winY2);
+                    }
+                    isPlayerTurn = true;
+                    timeRemaining = 60.f;
                 }
             }
         }

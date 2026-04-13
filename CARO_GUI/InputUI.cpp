@@ -228,6 +228,7 @@ void HandleInGameInput(
             {
                 if (IsAIThinking()) 
                 { 
+                    StartAIThinking(); 
                     errSound.play(); 
                     return; 
                 }

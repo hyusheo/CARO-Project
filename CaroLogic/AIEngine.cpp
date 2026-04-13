@@ -2,7 +2,7 @@
 #include <thread>
 #include <chrono>
 
-void CalculateBestMove(int boardCopy[30][30], int boardSize, int level, int* outX, int* outY) {
+void CalculateBestMove(const int boardCopy[30][30], int boardSize, int level, int* outX, int* outY) {
     // 1. Giả lập AI đang "vắt óc suy nghĩ" trong 1 giây
     // Lúc này giao diện đồ họa bên EXE vẫn phải rê chuột mượt mà, đồng hồ vẫn chạy
     std::this_thread::sleep_for(std::chrono::seconds(1));
