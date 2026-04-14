@@ -10,7 +10,7 @@ Release/
 *.tlog
 *.idb
 *.exe
-*.dll
+# *.dll
 
 # user settings
 *.user
