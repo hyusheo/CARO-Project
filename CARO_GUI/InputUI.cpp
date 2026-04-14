@@ -62,28 +62,27 @@ void HandleMenuInput(
                 currentState = AppState::SETTINGS_SCREEN; 
             }
             // LOAD GAME
-            else if (i == 3) 
+            else if (i == 3)
             {
                 float st = 0.f; int stn = 0;
-                if (LoadGameBinary("savegame.bin", &st, &stn)) 
+                if (LoadGameBinary("savegame.bin", &st, &stn))
                 {
                     timeRemaining = st;
                     isPlayerTurn = (stn == 1);
                     currentState = AppState::IN_GAME_SCREEN;
                     gameStatus = 0;
                 }
-                else 
+                else
                 {
                     errSound.play();
-            }
-            else if (i == 4) { window.close(); }
-        }
+                }
+            }            
             // EXIT
             else if (i == 4) 
             { 
                 window.close(); 
-    }
-}
+            }
+        }
     }
 }
 
