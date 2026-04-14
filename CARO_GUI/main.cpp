@@ -119,6 +119,7 @@ int main()
             }
         }
 
+
         // ── Cập nhật logic ───────────────────────────────────
         UpdateAI();
         if (currentState == AppState::IN_GAME_SCREEN && gameStatus == 0)
