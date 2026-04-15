@@ -36,10 +36,22 @@ extern "C" {
     CARO_API void StartAIThinking();
     CARO_API bool IsAIThinking();
     CARO_API int  GetAIResult(int* outX, int* outY);
-    CARO_API void UpdateAI(); 
+    CARO_API void UpdateAI();
 
 
     // 5. File I/O
-    CARO_API bool SaveGameBinary(const char* filepath, float timeLeft, int isPlayerTurn);
-    CARO_API bool LoadGameBinary(const char* filepath, float* timeLeft, int* isPlayerTurn);
+    // 
+    // 
+    // old
+    //CARO_API bool SaveGameBinary(const char* filepath, float timeLeft, int isPlayerTurn);
+    //CARO_API bool LoadGameBinary(const char* filepath, float* timeLeft, int* isPlayerTurn);
+    //
+    //
+    // Multi-slot IO
+    CARO_API bool SaveGameSlot(int slotId, float timeLeft, int isPlayerTurn, const char* gameName);
+    CARO_API bool LoadGameSlot(int slotId, float* timeLeft, int* isPlayerTurn);
+    CARO_API bool PeekGameSlot(int slotId, int* outBoardSize, int* outMoves, int* outTurn, char* outName);
+    CARO_API bool DeleteGameSlot(int slotId);
+    CARO_API bool GetSlotPreview(int slotId, int* outBoardSize, int* outMoves, int* outTurn, char* outDate, char* outName, int outBoard[30][30]);
+    CARO_API int  EvaluateBoard();
 }

@@ -10,7 +10,7 @@ int main()
 {
     sf::RenderWindow window(
         sf::VideoMode(Config::WIN_WIDTH, Config::WIN_HEIGHT),
-        "Caro Master - Procedural SFML 2.6.2"
+        "Caro Master"
     );
     window.setFramerateLimit(60);
 
@@ -60,6 +60,16 @@ int main()
     // lastUndoPlayer: 0/1 = ai vừa dùng undo, -1 = chưa ai / đã reset
     int undoLeft[2] = { Config::UNDO_MAX, Config::UNDO_MAX };
     int lastUndoPlayer = -1;
+    float saveNotifTimer = 0.f;
+
+    // Biến cho tính năng Name / Quick Save
+    bool isNaming = false;
+    int selectedSlotToSave = -1;
+    std::string currentInputName = "";
+
+    // --> Thêm 2 biến này để nhớ Slot Quick Save
+    int currentLoadedSlot = -1;
+    std::string currentLoadedName = "";
 
     sf::Clock clock;
 
@@ -75,6 +85,17 @@ int main()
                 window.close();
             }
 
+            if (event.type == sf::Event::TextEntered && isNaming && currentState == AppState::SAVE_SCREEN) {
+                if (event.text.unicode == '\b') {
+                    if (!currentInputName.empty()) {
+                        currentInputName.pop_back();
+                    }
+                }
+                else if (event.text.unicode < 128 && event.text.unicode >= 32 && currentInputName.size() < 25) {
+                    currentInputName += static_cast<char>(event.text.unicode);
+                }
+            }
+
             if (event.type == sf::Event::MouseButtonPressed &&
                 event.mouseButton.button == sf::Mouse::Left)
             {
@@ -88,13 +109,22 @@ int main()
                         gameMode,
                         boardSize, ruleBlock2, aiLevel,
                         timeRemaining, isPlayerTurn, gameStatus,
-                        errSound
+                        errSound, currentLoadedSlot, currentLoadedName
                     );
                     // Reset win line và undo state khi bắt đầu game mới
                     winX1 = winY1 = winX2 = winY2 = -1;
                     undoLeft[0] = Config::UNDO_MAX;
                     undoLeft[1] = Config::UNDO_MAX;
                     lastUndoPlayer = -1;
+                    saveNotifTimer = 0.f;
+                }
+                else if (currentState == AppState::LOAD_SCREEN) 
+                {
+                    HandleLoadInput(window, mx, my, currentState, timeRemaining, isPlayerTurn, gameStatus, errSound, currentLoadedSlot, currentLoadedName);
+                }
+                else if (currentState == AppState::SAVE_SCREEN) 
+                {
+                    HandleSaveInput(window, mx, my, currentState, timeRemaining, isPlayerTurn, saveNotifTimer, errSound, isNaming, selectedSlotToSave, currentInputName, currentLoadedSlot, currentLoadedName);
                 }
                 else if (currentState == AppState::IN_GAME_SCREEN)
                 {
@@ -102,8 +132,9 @@ int main()
                         mx, my, currentState,
                         boardSize, gameMode,
                         isPlayerTurn, gameStatus, timeRemaining,
-                        undoLeft, lastUndoPlayer,   // <-- truyền undo state
-                        errSound
+                        undoLeft, lastUndoPlayer, saveNotifTimer,
+                        errSound, currentLoadedSlot, 
+                        currentLoadedName
                     );
                 }
                 else if (currentState == AppState::SETTINGS_SCREEN)
@@ -119,7 +150,10 @@ int main()
             }
         }
 
-
+        if (saveNotifTimer > 0.f)
+        {
+            saveNotifTimer -= dt; 
+        }
         // ── Cập nhật logic ───────────────────────────────────
         UpdateAI();
         if (currentState == AppState::IN_GAME_SCREEN && gameStatus == 0)
@@ -161,6 +195,14 @@ int main()
         {
             DrawMenu(window, font);
         }
+        if (currentState == AppState::LOAD_SCREEN)
+        {
+            DrawLoadScreen(window, font); 
+        }
+        if (currentState == AppState::SAVE_SCREEN)
+        {
+            DrawSaveScreen(window, font, isNaming, currentInputName, clock);
+        }
         else if (currentState == AppState::SETTINGS_SCREEN)
         {
             DrawSettings(window, font, boardSize, ruleBlock2,
@@ -186,7 +228,7 @@ int main()
 
             DrawInGamePanel(window, font, timeRemaining,
                 isPlayerTurn, gameStatus, boardSize,
-                gameMode, undoLeft);   // <-- truyền undoLeft
+                gameMode, undoLeft, saveNotifTimer);  
         }
 
         window.display();

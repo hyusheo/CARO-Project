@@ -4,6 +4,7 @@
 #include "DataIO.h"
 #include <atomic>
 #include <future>
+#include <cstring>
 
 // ============================================================
 //  TRẠNG THÁI BÀN CỜ
@@ -30,8 +31,8 @@ struct MoveRecord {
     int player; // player: 1 = người (X), 2 = AI (O)
 };
 
-static MoveRecord g_history[900];
-static int        g_historyCount = 0; // số nước đang có trong stack
+MoveRecord g_history[900];
+int        g_historyCount = 0; // số nước đang có trong stack
 
 // Helper nội bộ: đẩy 1 nước vào stack
 static void PushHistory(int x, int y, int player)
@@ -275,14 +276,43 @@ extern "C" CARO_API void UpdateAI()
 // ============================================================
 //  Save / Load
 // ============================================================
-extern "C" CARO_API bool SaveGameBinary(const char* filepath,
-    float timeLeft, int isPlayerTurn)
-{
-    return SaveBinary(filepath, timeLeft, isPlayerTurn);
+
+extern "C" CARO_API bool SaveGameSlot(int slotId, float timeLeft, int isPlayerTurn, const char* gameName) {
+    return SaveSlotBinary(slotId, timeLeft, isPlayerTurn, gameName);
 }
 
-extern "C" CARO_API bool LoadGameBinary(const char* filepath,
-    float* timeLeft, int* isPlayerTurn)
-{
-    return LoadBinary(filepath, timeLeft, isPlayerTurn);
+extern "C" CARO_API bool LoadGameSlot(int slotId, float* timeLeft, int* isPlayerTurn) {
+    return LoadSlotBinary(slotId, timeLeft, isPlayerTurn);
+}
+
+extern "C" CARO_API bool PeekGameSlot(int slotId, int* outBoardSize, int* outMoves, int* outTurn, char* outName) {
+    SaveMetadata meta;
+    if (PeekSlotMetadata(slotId, &meta)) {
+        *outBoardSize = meta.boardSize; *outMoves = meta.historyCount; *outTurn = meta.isPlayerTurn;
+        strcpy_s(outName, 64, meta.gameName);
+        return true;
+    }
+    return false;
+}
+
+extern "C" CARO_API bool DeleteGameSlot(int slotId) { return DeleteSlotBinary(slotId); }
+
+extern "C" CARO_API bool GetSlotPreview(int slotId, int* outBoardSize, int* outMoves, int* outTurn, char* outDate, char* outName, int outBoard[30][30]) {
+    SaveMetadata meta;
+    if (PeekSlotPreview(slotId, &meta, outBoard)) {
+        *outBoardSize = meta.boardSize; *outMoves = meta.historyCount; *outTurn = meta.isPlayerTurn;
+        strcpy_s(outDate, 32, meta.saveDate); strcpy_s(outName, 64, meta.gameName);
+        return true;
+    }
+    return false;
+}
+extern "C" CARO_API int EvaluateBoard() {
+    // Nếu chưa có nước cờ nào được đánh thì chắc chắn là đang chơi (0)
+    if (g_historyCount == 0) return 0;
+    // Lấy tọa độ của nước đi cuối cùng ra
+    int lastX = g_history[g_historyCount - 1].x;
+    int lastY = g_history[g_historyCount - 1].y;
+    int lastPlayer = g_history[g_historyCount - 1].player;
+    // Check lại xem nước đi cuối đó có tạo thành 5 ố thẳng hàng không
+    return CheckWinCondition(lastX, lastY, lastPlayer);
 }

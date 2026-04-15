@@ -14,7 +14,10 @@
 // ============================================================
 int GetDynCellSize(int boardSize)
 {
-    if (boardSize <= 0) return Config::CELL_SIZE;
+    if (boardSize <= 0)
+    {
+        return Config::CELL_SIZE;
+    }
 
     // Không gian thực sự dành cho bàn cờ
     const int availW = Config::WIN_WIDTH - Config::OFFSET_X

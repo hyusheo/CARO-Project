@@ -1,57 +1,94 @@
 #include "DataIO.h"
 #include <fstream>
+#include <string>
+#include <cstring>
+#include <cstdio>
+#include <ctime>
 
-// Gọi các biến toàn cục đang "sống" bên trong file CaroAPI.cpp
 extern int g_board[30][30];
 extern int g_boardSize;
 extern bool g_ruleBlock2;
 extern int g_aiLevel;
 
-bool SaveBinary(const char* filepath, float timeLeft, int isPlayerTurn) {
-    // Mở file ở chế độ ghi nhị phân (out | binary)
-    std::ofstream file(filepath, std::ios::out | std::ios::binary);
-    if (!file.is_open())
-    {
-        return false;
-    }
+struct MoveRecord { int x, y, player; };
+extern MoveRecord g_history[900];
+extern int g_historyCount;
 
-    // 1. Ghi các biến cấu hình (Metadata)
-    file.write(reinterpret_cast<const char*>(&g_boardSize), sizeof(g_boardSize));
-    file.write(reinterpret_cast<const char*>(&g_ruleBlock2), sizeof(g_ruleBlock2));
-    file.write(reinterpret_cast<const char*>(&g_aiLevel), sizeof(g_aiLevel));
+std::string GetSlotPath(int slotId) {
+    return "save_slot_" + std::to_string(slotId) + ".bin";
+}
 
-    // 2. Ghi trạng thái lượt đi và thời gian còn lại (nhận từ giao diện EXE truyền vào)
-    file.write(reinterpret_cast<const char*>(&isPlayerTurn), sizeof(isPlayerTurn));
-    file.write(reinterpret_cast<const char*>(&timeLeft), sizeof(timeLeft));
+bool SaveSlotBinary(int slotId, float timeLeft, int isPlayerTurn, const char* gameName) {
+    std::ofstream file(GetSlotPath(slotId), std::ios::out | std::ios::binary);
+    if (!file.is_open()) return false;
 
-    // 3. Ghi mảng 2 chiều toàn cục (Sức mạnh của C-Style)
-    // Thay vì lặp 900 lần (30x30), ta ghi nguyên khối 3600 bytes (900 * 4 bytes/int) trong 1 tíc tắc
+    SaveMetadata meta;
+    strcpy_s(meta.magic, sizeof(meta.magic), "CAROSAV");
+    meta.version = 1;
+    meta.boardSize = g_boardSize;
+    meta.ruleBlock2 = g_ruleBlock2;
+    meta.aiLevel = g_aiLevel;
+    meta.isPlayerTurn = isPlayerTurn;
+    meta.timeLeft = timeLeft;
+    meta.historyCount = g_historyCount;
+    strcpy_s(meta.gameName, sizeof(meta.gameName), gameName);
+
+    std::time_t t = std::time(nullptr);
+    struct tm timeinfo;
+    localtime_s(&timeinfo, &t);
+    std::strftime(meta.saveDate, sizeof(meta.saveDate), "%d/%m/%Y %H:%M", &timeinfo);
+
+    file.write(reinterpret_cast<const char*>(&meta), sizeof(SaveMetadata));
     file.write(reinterpret_cast<const char*>(g_board), sizeof(g_board));
-
+    if (g_historyCount > 0) {
+        file.write(reinterpret_cast<const char*>(g_history), sizeof(MoveRecord) * g_historyCount);
+    }
     file.close();
     return true;
 }
 
-bool LoadBinary(const char* filepath, float* outTimeLeft, int* outIsPlayerTurn) {
-    // Mở file ở chế độ đọc nhị phân (in | binary)
-    std::ifstream file(filepath, std::ios::in | std::ios::binary);
-    if (!file.is_open()) 
-    {
-        return false;
-    }
+bool LoadSlotBinary(int slotId, float* outTimeLeft, int* outIsPlayerTurn) {
+    std::ifstream file(GetSlotPath(slotId), std::ios::in | std::ios::binary);
+    if (!file.is_open()) return false;
 
-    // 1. Đọc các biến cấu hình (BẮT BUỘC phải đọc theo đúng thứ tự lúc ghi)
-    file.read(reinterpret_cast<char*>(&g_boardSize), sizeof(g_boardSize));
-    file.read(reinterpret_cast<char*>(&g_ruleBlock2), sizeof(g_ruleBlock2));
-    file.read(reinterpret_cast<char*>(&g_aiLevel), sizeof(g_aiLevel));
+    SaveMetadata meta;
+    file.read(reinterpret_cast<char*>(&meta), sizeof(SaveMetadata));
+    if (std::strcmp(meta.magic, "CAROSAV") != 0) return false;
 
-    // 2. Đọc trạng thái (Đẩy ngược giá trị ra ngoài cho EXE qua con trỏ)
-    file.read(reinterpret_cast<char*>(outIsPlayerTurn), sizeof(*outIsPlayerTurn));
-    file.read(reinterpret_cast<char*>(outTimeLeft), sizeof(*outTimeLeft));
+    g_boardSize = meta.boardSize;
+    g_ruleBlock2 = meta.ruleBlock2;
+    g_aiLevel = meta.aiLevel;
+    *outIsPlayerTurn = meta.isPlayerTurn;
+    *outTimeLeft = meta.timeLeft;
+    g_historyCount = meta.historyCount;
 
-    // 3. Đọc mảng 2 chiều khôi phục lại bàn cờ
     file.read(reinterpret_cast<char*>(g_board), sizeof(g_board));
+    if (g_historyCount > 0) {
+        file.read(reinterpret_cast<char*>(g_history), sizeof(MoveRecord) * g_historyCount);
+    }
+    file.close();
+    return true;
+}
 
+bool PeekSlotMetadata(int slotId, SaveMetadata* outMeta) {
+    std::ifstream file(GetSlotPath(slotId), std::ios::in | std::ios::binary);
+    if (!file.is_open()) return false;
+    file.read(reinterpret_cast<char*>(outMeta), sizeof(SaveMetadata));
+    file.close();
+    return (std::strcmp(outMeta->magic, "CAROSAV") == 0);
+}
+
+bool DeleteSlotBinary(int slotId) {
+    std::string path = GetSlotPath(slotId);
+    return std::remove(path.c_str()) == 0;
+}
+
+bool PeekSlotPreview(int slotId, SaveMetadata* outMeta, int outBoard[30][30]) {
+    std::ifstream file(GetSlotPath(slotId), std::ios::in | std::ios::binary);
+    if (!file.is_open()) return false;
+    file.read(reinterpret_cast<char*>(outMeta), sizeof(SaveMetadata));
+    if (std::strcmp(outMeta->magic, "CAROSAV") != 0) return false;
+    file.read(reinterpret_cast<char*>(outBoard), sizeof(int) * 30 * 30);
     file.close();
     return true;
 }

@@ -23,7 +23,8 @@ void HandleMenuInput(
     GameMode& gameMode,
     int boardSize, bool ruleBlock2, int aiLevel,
     float& timeRemaining, bool& isPlayerTurn, int& gameStatus,
-    sf::Sound& errSound)
+    sf::Sound& errSound, int& currentLoadedSlot,
+    std::string& currentLoadedName)
 {
     const float BTN_W = 350.f;
     const float BTN_H = 60.f;
@@ -32,52 +33,32 @@ void HandleMenuInput(
     for (int i = 0; i < 5; ++i)
     {
         float bY = 300.f + i * 80.f;
+
         if (mouseX >= BTN_X && mouseX <= BTN_X + BTN_W &&
             mouseY >= bY && mouseY <= bY + BTN_H)
         {
-            // PVP
-            if (i == 0) 
-            { 
-                gameMode = GameMode::PVP; 
-                goto START_GAME; 
-            }
-            // PVE
-            if (i == 1) 
-            { 
-                gameMode = GameMode::PVE; 
-                goto START_GAME; 
-            }
-            if (false)
+            if (i == 0 || i == 1) 
             {
-            START_GAME:
+                gameMode = (i == 0) ? GameMode::PVP : GameMode::PVE; 
+
                 InitGame(boardSize, ruleBlock2, aiLevel);
                 currentState = AppState::IN_GAME_SCREEN;
                 isPlayerTurn = true;
                 timeRemaining = 60.f;
                 gameStatus = 0;
+
+                // RESET: Game mới nên không nhớ slot nào hết
+                currentLoadedSlot = -1;
+                currentLoadedName = "";
             }
-            // SETTING
             else if (i == 2) 
             { 
                 currentState = AppState::SETTINGS_SCREEN; 
             }
-            // LOAD GAME
             else if (i == 3)
             {
-                float st = 0.f; int stn = 0;
-                if (LoadGameBinary("savegame.bin", &st, &stn))
-                {
-                    timeRemaining = st;
-                    isPlayerTurn = (stn == 1);
-                    currentState = AppState::IN_GAME_SCREEN;
-                    gameStatus = 0;
-                }
-                else
-                {
-                    errSound.play();
-                }
-            }            
-            // EXIT
+                currentState == AppState::LOAD_SCREEN; 
+            }
             else if (i == 4) 
             { 
                 window.close(); 
@@ -103,11 +84,12 @@ void HandleMenuInput(
 void HandleInGameInput(
     int mouseX, int mouseY,
     AppState& currentState,
-    int boardSize,
-    GameMode gameMode,
-    bool& isPlayerTurn, int& gameStatus, float& timeRemaining,
-    int undoLeft[2], int& lastUndoPlayer,
-    sf::Sound& errSound)
+    int boardSize, GameMode gameMode,
+    bool& isPlayerTurn, int& gameStatus,
+    float& timeRemaining, int undoLeft[2],
+    int& lastUndoPlayer, float& saveNotifTimer,
+    sf::Sound& errSound, int& currentLoadedSlot,
+    std::string& currentLoadedName)
 {
     // --- A. Khu vực bàn cờ ---
     int cellSz = GetDynCellSize(boardSize);
@@ -143,7 +125,10 @@ void HandleInGameInput(
 
                 // Ng??i v?a ?i n??c th?c ? reset quy?n undo c?a h?
                 // (???c ph�p undo l?i ? l??t sau n?u c�n l??t)
-                int playerIdx = (currentPlayer == 1) ? 0 : 1;
+                //
+                // 
+                // old 
+                // int playerIdx = (currentPlayer == 1) ? 0 : 1;
                 lastUndoPlayer = -1; // ai cũng có thể undo, không bị chặn liên tiếp
 
                 if (gameMode == GameMode::PVP) 
@@ -174,7 +159,7 @@ void HandleInGameInput(
             continue;
         }
 
-        if (i == 0) // ?? UNDO ??????????????????????????????
+        if (i == 0) // UNDO 
         {
             if (gameMode == GameMode::PVP)
             {
@@ -184,13 +169,7 @@ void HandleInGameInput(
                 int playerIdx = isPlayerTurn ? 0 : 1;
 
                 // Chọn undo liên tiếp: phải đi 1 nước thực trước
-                if (lastUndoPlayer == playerIdx) 
-                {
-                    errSound.play();
-                    return;
-                }
-                // Chọn khi hết lượt undo
-                if (undoLeft[playerIdx] <= 0) 
+                if (lastUndoPlayer == playerIdx || undoLeft[playerIdx] <= 0)
                 {
                     errSound.play();
                     return;
@@ -249,7 +228,25 @@ void HandleInGameInput(
         }
         else if (i == 1) // Save
         {
-            SaveGameBinary("savegame.bin", timeRemaining, isPlayerTurn ? 1 : 0);
+            //
+            // 
+            // old
+            // SaveGameBinary("savegame.bin", timeRemaining, isPlayerTurn ? 1 : 0);
+            if (currentLoadedSlot != 1)
+            {
+                if (SaveGameSlot(currentLoadedSlot, timeRemaining, isPlayerTurn ? 1 : 0, currentLoadedName.c_str()))
+                {
+                    saveNotifTimer = 2.0f;
+                }
+                else
+                {
+                    errSound.play();
+                }
+            }
+            else
+            {
+                currentState = AppState::SAVE_SCREEN;
+            }
         }
         else if (i == 2) // Main Menu
         {
@@ -337,10 +334,81 @@ void HandleSettingsInput(
         errSound.play(); 
     }
 
-    const float BW = 300.f, BH = 60.f;
-    const float BX = Config::WIN_WIDTH / 2.f - BW / 2.f, BY = 650.f;
+    const float BW = 300.f;
+    const float BH = 60.f;
+    const float BX = Config::WIN_WIDTH / 2.f - BW / 2.f;
+    const float BY = 650.f;
     if (mouseX >= BX && mouseX <= BX + BW && mouseY >= BY && mouseY <= BY + BH)
     {
         currentState = AppState::MENU_SCREEN;
+    }
+}
+
+void HandleLoadInput(sf::RenderWindow& window, int mouseX, int mouseY, AppState& currentState, float& timeRemaining, bool& isPlayerTurn, int& gameStatus, sf::Sound& errSound, int& currentLoadedSlot, std::string& currentLoadedName) {
+    const float START_X = 80.f;
+    const float START_Y = 150.f;
+    const float BTN_W = 400.f;
+    const float BTN_H = 75.f;
+    const float DEL_W = 70.f;
+
+    for (int i = 1; i <= 5; ++i) {
+        float bY = START_Y + (i - 1) * 95.f;
+        int size = 0, moves = 0, turn = 0; char name[64];
+        bool hasData = PeekGameSlot(i, &size, &moves, &turn, name);
+
+        if (hasData && mouseX >= START_X + BTN_W + 10.f && mouseX <= START_X + BTN_W + 10.f + DEL_W && mouseY >= bY && mouseY <= bY + BTN_H) {
+            DeleteGameSlot(i); errSound.play(); return;
+        }
+
+        if (mouseX >= START_X && mouseX <= START_X + BTN_W && mouseY >= bY && mouseY <= bY + BTN_H) {
+            float tRem = 0; int turnData = 0;
+            if (LoadGameSlot(i, &tRem, &turnData)) {
+                timeRemaining = tRem;
+                isPlayerTurn = (turnData == 1);
+                gameStatus = EvaluateBoard();
+
+                // Ghi nhớ lại Slot và Tên vừa load để đánh tiếp save khỏi hỏi
+                currentLoadedSlot = i;
+                currentLoadedName = std::string(name);
+
+                currentState = AppState::IN_GAME_SCREEN;
+            }
+            else { errSound.play(); }
+            return;
+        }
+    }
+    if (mouseX >= 80.f && mouseX <= 280.f && mouseY >= 680.f && mouseY <= 740.f) currentState = AppState::MENU_SCREEN;
+}
+
+void HandleSaveInput(sf::RenderWindow& window, int mouseX, int mouseY, AppState& currentState, float timeRemaining, bool isPlayerTurn, float& saveNotifTimer, sf::Sound& errSound, bool& isNaming, int& selectedSlot, std::string& inputName, int& currentLoadedSlot, std::string& currentLoadedName) {
+    const float START_X = 80.f, START_Y = 150.f, BTN_W = 480.f, BTN_H = 75.f;
+    if (!isNaming) {
+        for (int i = 1; i <= 5; ++i) {
+            float bY = START_Y + (i - 1) * 95.f;
+            if (mouseX >= START_X && mouseX <= START_X + BTN_W && mouseY >= bY && mouseY <= bY + BTN_H) {
+                selectedSlot = i; isNaming = true; inputName = ""; return;
+            }
+        }
+        if (mouseX >= 80.f && mouseX <= 280.f && mouseY >= 680.f && mouseY <= 740.f) currentState = AppState::IN_GAME_SCREEN;
+    }
+    else {
+        float w = Config::WIN_WIDTH / 2.f, h = Config::WIN_HEIGHT / 2.f;
+        if (mouseX >= w - 100.f && mouseX <= w + 100.f && mouseY >= h + 35.f && mouseY <= h + 85.f) {
+            if (inputName.empty()) inputName = "Game khong ten";
+            if (SaveGameSlot(selectedSlot, timeRemaining, isPlayerTurn ? 1 : 0, inputName.c_str())) {
+                saveNotifTimer = 2.0f;
+
+                // Ghi nhớ lại Slot và Tên lần đầu tiên Save này!
+                currentLoadedSlot = selectedSlot;
+                currentLoadedName = inputName;
+
+                isNaming = false;
+                currentState = AppState::IN_GAME_SCREEN;
+            }
+            else errSound.play();
+        }
+        else if (mouseX < w - 250.f || mouseX > w + 250.f || mouseY < h - 125.f || mouseY > h + 125.f) {
+            isNaming = false;
+        }
     }
 }
