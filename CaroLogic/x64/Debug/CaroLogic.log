@@ -1,0 +1,7 @@
+﻿  AIEngine.cpp
+  CaroAPI.cpp
+  DataIO.cpp
+  LogicEngine.cpp
+  Generating Code...
+     Creating library D:\CARO-Project-main\x64\Debug\CaroLogic.lib and object D:\CARO-Project-main\x64\Debug\CaroLogic.exp
+  CaroLogic.vcxproj -> D:\CARO-Project-main\x64\Debug\CaroLogic.dll
