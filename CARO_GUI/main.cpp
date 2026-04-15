@@ -198,11 +198,11 @@ int main()
         {
             DrawMenu(window, font);
         }
-        if (currentState == AppState::LOAD_SCREEN)
+        else if (currentState == AppState::LOAD_SCREEN)
         {
             DrawLoadScreen(window, font);
         }
-        if (currentState == AppState::SAVE_SCREEN)
+        else if (currentState == AppState::SAVE_SCREEN)
         {
             DrawSaveScreen(window, font, isNaming, currentInputName, clock);
         }
