@@ -117,6 +117,7 @@ void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
             turnColor = COLOR_O;
         }
     }
+
     sf::Text turnText(turnStr, font, 26);
     turnText.setFillColor(turnColor);
     turnText.setStyle(sf::Text::Bold);
@@ -176,7 +177,7 @@ void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
             if (gameStatus == 1)
             {
                 s = "NGUOI 1 THANG!";
-            }
+        }
             else if (gameStatus == 2)
             {
                 s = "NGUOI 2 THANG!";
@@ -196,9 +197,9 @@ void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
             {
                 s = "MAY THANG!";
             }
-            else {
+        else {
                 s = "HOA!";
-            }
+        }
         }
         sf::Text st(s, font, 26);
         st.setFillColor(WIN_LINE_COLOR);
@@ -215,11 +216,11 @@ void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
             if (isPlayerTurn)
             {
                 hintStr = "Luot Nguoi 1 - bam vao ban co";
-            }
+        }
             else
             {
                 hintStr = "Luot Nguoi 2 - bam vao ban co";
-            }
+        }
         }
         else
         {
@@ -444,7 +445,7 @@ void DrawWinLine(sf::RenderWindow& window,
     int sX, int sY, int eX, int eY, int boardSize)
 {
     if (sX == -1)
-    {
+{
         return;
     }
     int   cs = GetDynCellSize(boardSize);

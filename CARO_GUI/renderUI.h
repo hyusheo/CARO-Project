@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Constants.h" 
+#include <string>
+#include "Constants.h"
 #include <string>
 
 void DrawMenu(sf::RenderWindow& window, const sf::Font& font);

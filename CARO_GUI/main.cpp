@@ -152,7 +152,7 @@ int main()
 
         if (saveNotifTimer > 0.f)
         {
-            saveNotifTimer -= dt; 
+            saveNotifTimer -= dt;
         }
         // ── Cập nhật logic ───────────────────────────────────
         UpdateAI();
@@ -179,13 +179,16 @@ int main()
                     }
                 isPlayerTurn = true;
                 timeRemaining = 60.f;
-                }
             }
+        }
         }
 
         if (gameStatus != 0 && winX1 == -1)
         {
             GetWinLine(&winX1, &winY1, &winX2, &winY2);
+        }
+        else {
+            winX1 = -1; winY1 = -1; winX2 = -1; winY2 = -1;
         }
 
         // ── Vẽ ──────────────────────────────────────────────
@@ -197,7 +200,7 @@ int main()
         }
         if (currentState == AppState::LOAD_SCREEN)
         {
-            DrawLoadScreen(window, font); 
+            DrawLoadScreen(window, font);
         }
         if (currentState == AppState::SAVE_SCREEN)
         {

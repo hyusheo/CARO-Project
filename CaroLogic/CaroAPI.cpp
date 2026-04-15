@@ -32,7 +32,7 @@ struct MoveRecord {
 };
 
 MoveRecord g_history[900];
-int        g_historyCount = 0; // số nước đang có trong stack
+int        g_historyCount = 0;
 
 // Helper nội bộ: đẩy 1 nước vào stack
 static void PushHistory(int x, int y, int player)
@@ -68,7 +68,7 @@ extern "C" CARO_API void InitGame(int size, bool ruleBlock2, int level)
         for (int j = 0; j < 30; ++j)
         {
             g_board[i][j] = 0;
-        }
+}
     }
 
     // Reset lịch sử và đường thắng
@@ -269,7 +269,7 @@ extern "C" CARO_API void UpdateAI()
             g_hasAIResult = true; 
 
             // Danh dau AI da xong
-            g_isAiThinking = false; 
+        g_isAiThinking = false;
         }
 }
 

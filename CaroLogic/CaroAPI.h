@@ -39,14 +39,6 @@ extern "C" {
     CARO_API void UpdateAI();
 
 
-    // 5. File I/O
-    // 
-    // 
-    // old
-    //CARO_API bool SaveGameBinary(const char* filepath, float timeLeft, int isPlayerTurn);
-    //CARO_API bool LoadGameBinary(const char* filepath, float* timeLeft, int* isPlayerTurn);
-    //
-    //
     // Multi-slot IO
     CARO_API bool SaveGameSlot(int slotId, float timeLeft, int isPlayerTurn, const char* gameName);
     CARO_API bool LoadGameSlot(int slotId, float* timeLeft, int* isPlayerTurn);
