@@ -17,6 +17,8 @@ extern "C" {
     CARO_API void StartAIThinking();
     CARO_API bool IsAIThinking();
     CARO_API int  GetAIResult(int* outX, int* outY);
+    extern "C" CARO_API void MakeMove(int x, int y, int player);
+    extern "C" CARO_API int CheckWinCondition(int x, int y, int player);
 
     // Multi-slot IO
     CARO_API bool SaveGameSlot(int slotId, float timeLeft, int isPlayerTurn, const char* gameName);

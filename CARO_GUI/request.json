@@ -1,0 +1,8 @@
+{
+        "contents": [{
+            "parts": [{"text": "Bạn là đại kiện tướng cờ Caro (Gomoku). Bàn cờ kích thước 15x15. Nhiệm vụ của bạn là tìm ra nước đi tốt nhất tiếp theo để thắng hoặc chặn đối thủ.\nTuyệt đối CHỈ trả về tọa độ X và Y cách nhau bởi dấu phẩy (VD: 15,14). Không giải thích gì thêm.\n\nDanh sách các nước cờ hiện tại trên bàn:\n- Người chơi (X) tại: 7,4\n- Người chơi (X) tại: 7,6\n- AI (O) tại: 7,7\n- AI (O) tại: 8,5\n- AI (O) tại: 8,6\n- Người chơi (X) tại: 8,7\n- AI (O) tại: 8,8\n- Người chơi (X) tại: 9,5\n- AI (O) tại: 9,6\n- Người chơi (X) tại: 9,7\n- AI (O) tại: 9,8\n- Người chơi (X) tại: 9,9\n- Người chơi (X) tại: 10,5\n- AI (O) tại: 10,6\n- AI (O) tại: 10,7\n- AI (O) tại: 10,8\n- Người chơi (X) tại: 10,9\n- Người chơi (X) tại: 11,6\n- AI (O) tại: 11,8\n- Người chơi (X) tại: 12,8\n- Người chơi (X) tại: 12,9\n\nHãy suy nghĩ cẩn thận. TUY NHIÊN, bạn chỉ được phép trả về kết quả theo ĐÚNG ĐỊNH DẠNG: 'X,Y'. Tuyệt đối không in ra quá trình suy nghĩ của bạn."}]
+        }],
+        "generationConfig": {
+            "temperature": 0.2
+        }
+    }

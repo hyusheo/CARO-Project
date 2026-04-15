@@ -1,4 +1,2 @@
 #pragma once
-
-// Khai báo hàm AI (Thuần thủ tục)
 void CalculateBestMove(int boardCopy[30][30], int boardSize, int level, int* outX, int* outY);

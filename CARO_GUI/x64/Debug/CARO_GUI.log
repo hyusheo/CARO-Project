@@ -1,3 +1,2 @@
-﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(538,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (CARO_GUI.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  InputUI.cpp
-  CARO_GUI.vcxproj -> D:\downloads\CaroGameProject\CaroGameProject\x64\Debug\CaroGUI.exe
+﻿C:\Program Files\Microsoft Visual Studio\18\Insiders\MSBuild\Microsoft\VC\v180\Microsoft.CppBuild.targets(551,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (CARO_GUI.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  CARO_GUI.vcxproj -> C:\Documents\First year\CSLT\New folder\x64\Debug\CaroGUI.exe
