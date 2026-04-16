@@ -137,15 +137,20 @@ extern "C" CARO_API int ProcessMove(int x, int y, int player)
 //
 //  Sau khi undo:
 //   - Ô bàn cờ tương ứng bị xóa về 0
-//   - Đường thắng bị reset (nếu trước đó có ai thắng)
+//   - Nếu có người thắng thì không thể undo được nữa, ván cờ kết thúc
 //   - Trả về số nước đã undo thực tế (0 / 1 / 2)
 // ============================================================
 extern "C" CARO_API int UndoMove()
 {
+    //Nếu đã có đường thẳng thì không được undo nữa
+    if (g_winStartX != -1) {
+        return 0;
+    }
+    if (g_historyCount == g_boardSize * g_boardSize) {
+        return 0;
+    }
     if (g_historyCount == 0) return 0; // không có gì để undo
 
-    // Xóa đường thắng trước (undo hủy mọi trạng thái kết thúc)
-    g_winStartX = g_winStartY = g_winEndX = g_winEndY = -1;
 
     int undone = 0;
 
@@ -177,10 +182,13 @@ extern "C" CARO_API int UndoMove()
 // ============================================================
 extern "C" CARO_API int UndoOneMove()
 {
+    if (g_winStartX != -1) {
+        return 0;
+    }
+    if (g_historyCount == g_boardSize * g_boardSize) {
+        return 0;
+    }
     if (g_historyCount == 0) return 0;
-
-    // Reset đường thắng
-    g_winStartX = g_winStartY = g_winEndX = g_winEndY = -1;
 
     --g_historyCount;
     int x = g_history[g_historyCount].x;

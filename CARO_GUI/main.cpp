@@ -1,5 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#pragma comment(lib, "sfml-graphics-d.lib")
+#pragma comment(lib, "sfml-window-d.lib")
+#pragma comment(lib, "sfml-system-d.lib")
+#pragma comment(lib, "sfml-audio-d.lib")
+#pragma comment(lib, "Winmm.lib")
 #include "Constants.h"
 #include "CaroAPI.h"
 #include "RenderUI.h"
@@ -180,7 +185,7 @@ int main()
                 isPlayerTurn = true;
                 timeRemaining = 60.f;
             }
-        }
+            }
         }
 
         if (gameStatus != 0 && winX1 == -1)

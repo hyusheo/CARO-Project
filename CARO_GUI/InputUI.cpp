@@ -54,17 +54,17 @@ void HandleMenuInput(
             else if (i == 2) 
             { 
                 currentState = AppState::SETTINGS_SCREEN; 
-        }
+                }
             else if (i == 3)
             {
                 currentState == AppState::LOAD_SCREEN; 
-    }
+            }
             else if (i == 4) 
             { 
                 window.close(); 
-}
         }
     }
+}
 }
 
 // ============================================================
@@ -135,16 +135,16 @@ void HandleInGameInput(
                 {
                     isPlayerTurn = !isPlayerTurn;
                 }
-            else {
+                else {
                     isPlayerTurn = false;
                     if (gameStatus == 0) StartAIThinking();
+                }
             }
-        }
         }
         return;
     }
 
-    // --- B. N�t Undo / Save / Main Menu ---
+    // --- B. Nút Undo / Save / Main Menu ---
     const float pX = PanelX(boardSize);
     const float BTN_W = static_cast<float>(Config::PANEL_W);
     const float BTN_H = 52.f;
@@ -187,7 +187,7 @@ void HandleInGameInput(
                     return;
                 }
 
-                // Undo th�nh c�ng
+                // Undo thành công
                 undoLeft[playerIdx]--;
                 lastUndoPlayer = playerIdx; // đánh dấu người này vừa undo
 
@@ -237,7 +237,7 @@ void HandleInGameInput(
                 if (SaveGameSlot(currentLoadedSlot, timeRemaining, isPlayerTurn ? 1 : 0, currentLoadedName.c_str()))
                 {
                     saveNotifTimer = 2.0f;
-                }
+        }
                 else
                 {
                     errSound.play();
@@ -256,7 +256,7 @@ void HandleInGameInput(
 }
 
 // ============================================================
-//  HandleSettingsInput (kh�ng ??i)
+//  HandleSettingsInput (không ??i)
 // ============================================================
 void HandleSettingsInput(
     int mouseX, int mouseY,
