@@ -57,7 +57,7 @@ void HandleMenuInput(
                 }
             else if (i == 3)
             {
-                currentState == AppState::LOAD_SCREEN; 
+                currentState = AppState::LOAD_SCREEN; 
             }
             else if (i == 4) 
             { 
@@ -232,7 +232,7 @@ void HandleInGameInput(
             // 
             // old
             // SaveGameBinary("savegame.bin", timeRemaining, isPlayerTurn ? 1 : 0);
-            if (currentLoadedSlot != 1)
+            if (currentLoadedSlot != -1)
             {
                 if (SaveGameSlot(currentLoadedSlot, timeRemaining, isPlayerTurn ? 1 : 0, currentLoadedName.c_str()))
                 {
