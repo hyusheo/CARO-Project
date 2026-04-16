@@ -1,3 +1,4 @@
+
 #include "AIEngine.h"
 #include <vector>
 #include <algorithm>
@@ -278,3 +279,4 @@ void CalculateBestMove(int boardCopy[30][30], int boardSize, int level, int* out
         MoveEasy(boardCopy, boardSize, playerMode, aiMode, outX, outY);
     }
 }
+
