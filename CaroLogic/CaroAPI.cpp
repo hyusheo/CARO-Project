@@ -69,11 +69,15 @@ extern "C" CARO_API int UndoOneMove() {
 extern "C" CARO_API void StartAIThinking() {
     g_isAiThinking = true;
     static int boardCopy[30][30];
-    for (int i = 0; i < g_boardSize; ++i) for (int j = 0; j < g_boardSize; ++j) boardCopy[i][j] = g_board[i][j];
+    for (int i = 0; i < g_boardSize; ++i)
+        for (int j = 0; j < g_boardSize; ++j)
+            boardCopy[i][j] = g_board[i][j];
+
     g_aiTask = std::async(std::launch::async, []() {
+        // Chỉ tính toán tọa độ tốt nhất, KHÔNG thay đổi g_board hay PushHistory ở đây
         CalculateBestMove(boardCopy, g_boardSize, g_aiLevel, &g_aiMoveX, &g_aiMoveY);
-        g_board[g_aiMoveX][g_aiMoveY] = 2; PushHistory(g_aiMoveX, g_aiMoveY, 2);
-        g_aiResultState = CheckWinCondition(g_aiMoveX, g_aiMoveY, 2);
+
+        // Tính xong thì báo hiệu
         g_isAiThinking = false;
         });
 }
@@ -119,4 +123,61 @@ extern "C" CARO_API int EvaluateBoard() {
     int lastPlayer = g_history[g_historyCount - 1].player;
     // Check lại xem nước đi cuối đó có tạo thành 5 ố thẳng hàng không
     return CheckWinCondition(lastX, lastY, lastPlayer);
+}
+
+
+extern "C" CARO_API void MakeMove(int x, int y, int player) {
+    // Cập nhật mảng cờ và lịch sử
+    g_board[x][y] = player;
+    PushHistory(x, y, player);
+}
+
+int CheckWinCondition(int x, int y, int player) {
+    const int dx[] = { 1, 0, 1, 1 };
+    const int dy[] = { 0, 1, 1, -1 };
+
+    for (int dir = 0; dir < 4; ++dir) {
+        int count = 1, blocks = 0;
+        int sx = x, sy = y, ex = x, ey = y;
+
+        // Duyệt tới
+        int i = 1;
+        while (x + i * dx[dir] >= 0 && x + i * dx[dir] < g_boardSize && y + i * dy[dir] >= 0 && y + i * dy[dir] < g_boardSize) {
+            if (g_board[x + i * dx[dir]][y + i * dy[dir]] == player) {
+                count++; ex = x + i * dx[dir]; ey = y + i * dy[dir];
+            }
+            else {
+                if (g_board[x + i * dx[dir]][y + i * dy[dir]] != 0) blocks++;
+                break;
+            }
+            i++;
+        }
+
+        // Duyệt lùi
+        i = 1;
+        while (x - i * dx[dir] >= 0 && x - i * dx[dir] < g_boardSize && y - i * dy[dir] >= 0 && y - i * dy[dir] < g_boardSize) {
+            if (g_board[x - i * dx[dir]][y - i * dy[dir]] == player) {
+                count++; sx = x - i * dx[dir]; sy = y - i * dy[dir];
+            }
+            else {
+                if (g_board[x - i * dx[dir]][y - i * dy[dir]] != 0) blocks++;
+                break;
+            }
+            i++;
+        }
+
+        if (count >= 5) {
+            if (g_ruleBlock2 && blocks == 2 && count == 5) continue;
+            g_winStartX = sx; g_winStartY = sy;
+            g_winEndX = ex; g_winEndY = ey;
+            return player; // 1 hoặc 2
+        }
+    }
+
+    // Check Hòa
+    for (int r = 0; r < g_boardSize; ++r)
+        for (int c = 0; c < g_boardSize; ++c)
+            if (g_board[r][c] == 0) return 0; // Đang chơi
+
+    return 3; // Hòa
 }

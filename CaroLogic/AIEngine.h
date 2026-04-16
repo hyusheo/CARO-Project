@@ -1,3 +1,4 @@
+
 #pragma once
 
 // Khai báo hàm AI (Thuần thủ tục)

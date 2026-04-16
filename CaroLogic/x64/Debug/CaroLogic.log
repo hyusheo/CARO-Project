@@ -1,3 +1,6 @@
-﻿  CaroAPI.cpp
-     Creating library D:\downloads\CaroGameProject\CaroGameProject\x64\Debug\CaroLogic.lib and object D:\downloads\CaroGameProject\CaroGameProject\x64\Debug\CaroLogic.exp
-  CaroLogic.vcxproj -> D:\downloads\CaroGameProject\CaroGameProject\x64\Debug\CaroLogic.dll
+﻿  AIEngine.cpp
+  CaroAPI.cpp
+  Generating Code...
+  LINK : C:\Documents\First year\CSLT\New folder\x64\Debug\CaroLogic.dll not found or not built by the last incremental link; performing full link
+     Creating library C:\Documents\First year\CSLT\New folder\x64\Debug\CaroLogic.lib and object C:\Documents\First year\CSLT\New folder\x64\Debug\CaroLogic.exp
+  CaroLogic.vcxproj -> C:\Documents\First year\CSLT\New folder\x64\Debug\CaroLogic.dll

@@ -5,6 +5,7 @@
 #include "RenderUI.h"
 #include "InputUI.h"
 #include <iostream>
+#include "LogicEngine.h"
 
 int main()
 {
@@ -50,10 +51,9 @@ int main()
     int selectedSlotToSave = -1;
     std::string currentInputName = "";
 
-    // --> Thêm 2 biến này để nhớ Slot Quick Save
     int currentLoadedSlot = -1;
     std::string currentLoadedName = "";
-
+    bool aiStarted = false;
     sf::Clock clock;
 
     while (window.isOpen())
@@ -115,11 +115,32 @@ int main()
             if (timeRemaining <= 0.f) {
                 gameStatus = isPlayerTurn ? 2 : 1;
             }
-            if (gameMode == PVE && !isPlayerTurn && !IsAIThinking()) {
-                int aiX, aiY;
-                gameStatus = GetAIResult(&aiX, &aiY);
-                isPlayerTurn = true;
-                timeRemaining = 60.f;
+            if (currentState == IN_GAME_SCREEN && gameStatus == 0) {
+                timeRemaining -= dt;
+                if (timeRemaining <= 0.f) {
+                    gameStatus = isPlayerTurn ? 2 : 1;
+                }
+
+                // --- LOGIC GỌI AI ĐÃ ĐƯỢC SỬA LẠI ---
+                if (gameMode == PVE && !isPlayerTurn) {
+                    if (!aiStarted) {
+                        // 1. AI chưa được kích hoạt -> Gọi hàm Start để Thread AI chạy ngầm
+                        StartAIThinking();
+                        aiStarted = true;
+                    }
+                    else if (!IsAIThinking()) {
+                        // 2. AI đã kích hoạt xong, VÀ biến IsAIThinking trả về false (nghĩa là đã nghĩ xong)
+                        int aiX, aiY;
+                        GetAIResult(&aiX, &aiY);
+
+                        MakeMove(aiX, aiY, 2);
+                        gameStatus = CheckWinCondition(aiX, aiY, 2);
+
+                        isPlayerTurn = true;
+                        timeRemaining = 60.f;
+                        aiStarted = false; // Reset lại cờ chuẩn bị cho lượt đánh sau
+                    }
+                }
             }
         }
 
