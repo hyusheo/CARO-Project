@@ -1,6 +1,6 @@
 ﻿  AIEngine.cpp
-  CaroAPI.cpp
-  Generating Code...
-  LINK : C:\Documents\First year\CSLT\New folder\x64\Debug\CaroLogic.dll not found or not built by the last incremental link; performing full link
+C:\Documents\First year\CSLT\New folder\CaroLogic\AIEngine.cpp(29,38): warning C4244: 'return': conversion from 'double' to 'long', possible loss of data
+C:\Documents\First year\CSLT\New folder\CaroLogic\AIEngine.cpp(30,38): warning C4244: 'return': conversion from 'double' to 'long', possible loss of data
+C:\Documents\First year\CSLT\New folder\CaroLogic\AIEngine.cpp(114,66): warning C4244: '+=': conversion from 'double' to 'long', possible loss of data
      Creating library C:\Documents\First year\CSLT\New folder\x64\Debug\CaroLogic.lib and object C:\Documents\First year\CSLT\New folder\x64\Debug\CaroLogic.exp
   CaroLogic.vcxproj -> C:\Documents\First year\CSLT\New folder\x64\Debug\CaroLogic.dll
