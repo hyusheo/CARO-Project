@@ -19,6 +19,11 @@ void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
     int undoLeft[2], float saveNotifTimer
 ); 
 
+// void DrawInGamePanel(sf::RenderWindow& window, const sf::Font& font,
+//float timeRemaining, bool isPlayerTurn,
+//int gameStatus, int boardSize, GameMode gameMode,
+//int undoLeft[2])
+
 void DrawSettings(sf::RenderWindow& window, const sf::Font& font,
     int boardSize, bool ruleBlock2, int aiLevel,
     float sfxVolume, bool bgmEnabled

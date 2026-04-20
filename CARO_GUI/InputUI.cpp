@@ -54,7 +54,7 @@ void HandleMenuInput(
             else if (i == 2) 
             { 
                 currentState = AppState::SETTINGS_SCREEN; 
-                }
+            }
             else if (i == 3)
             {
                 currentState = AppState::LOAD_SCREEN; 
@@ -289,18 +289,18 @@ void HandleSettingsInput(
     { 
         boardSize = std::max(10, boardSize - 1); 
         errSound.play(); 
-            }
+    }
     else if (hPlus(r0)) 
     { 
         boardSize = std::min(30, boardSize + 1); 
         errSound.play(); 
-            }
+    }
 
     if (hToggle(SY + RG)) 
     { 
         ruleBlock2 = !ruleBlock2; 
         errSound.play(); 
-        }
+    }
 
     float r2 = SY + RG * 2;
     if (hMinus(r2)) 
@@ -310,7 +310,7 @@ void HandleSettingsInput(
     }
     else if (hPlus(r2)) 
     { 
-        aiLevel = std::min(6, aiLevel + 1);
+        aiLevel = std::min(3, aiLevel + 1);
         errSound.play(); 
 }
 

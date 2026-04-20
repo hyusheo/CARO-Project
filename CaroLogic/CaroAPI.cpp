@@ -12,7 +12,7 @@
 int  g_board[30][30] = { 0 };
 int  g_boardSize = 15;
 bool g_ruleBlock2 = true;
-int  g_aiLevel = 3;
+int  g_aiLevel = 1;
 
 // Tọa độ đường thắng (cho GUI vẽ)
 int g_winStartX = -1;
