@@ -20,20 +20,20 @@ int main()
     window.setFramerateLimit(60);
 
     sf::Font font;
-    if (!font.loadFromFile("arial.ttf"))
+    if (!font.loadFromFile("assets/arial.ttf"))
     {
         std::cout << "Loi: Khong tim thay arial.ttf" << std::endl;
     }
 
     sf::SoundBuffer errBuffer;
     sf::Sound errSound;
-    if (errBuffer.loadFromFile("error.wav"))
+    if (errBuffer.loadFromFile("assets/error.wav"))
     {
         errSound.setBuffer(errBuffer);
     }
 
     sf::Music bgMusic;
-    if (bgMusic.openFromFile("bgm.ogg")) 
+    if (bgMusic.openFromFile("assets/bgm.ogg")) 
     {
         bgMusic.setLoop(true);
         bgMusic.setVolume(50.f);
